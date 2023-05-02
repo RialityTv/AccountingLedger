@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="996c8e72-3dd6-4620-98e9-3d7f4cc0fa0c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/yup/accountingledger/HomeScreen.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/yup/accountingledger/Transaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/yup/accountingledger/TransactionManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/yup/accountingledger/AccountingLedgerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/yup/accountingledger/AccountingLedgerApp.java" afterDir="false" />
     </list>
