@@ -3,17 +3,20 @@ package org.yup.accountingledger;
 import java.io.BufferedWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
-    public class Transaction {
+public class Transaction {
         private String type;
         private LocalDate date;
+        private LocalTime time ;
         private double amount;
         private String vendor;
 
 
-        public Transaction( LocalDate thisDate, String transactionDetail,double parseDouble, String vendor) {
+        public Transaction( LocalDate thisDate, LocalTime thisTime, String transactionDetail,double parseDouble, String vendor) {
             this.date = thisDate;
+            this.time = thisTime;
             this.type = transactionDetail;
             this.amount = parseDouble;
             this.vendor = vendor;
@@ -27,7 +30,15 @@ import java.time.LocalDateTime;
             this.type = type;
         }
 
-        public LocalDate getDate() {
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public LocalDate getDate() {
             return date;
         }
 

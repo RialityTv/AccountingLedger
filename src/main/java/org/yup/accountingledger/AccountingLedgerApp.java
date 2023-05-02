@@ -161,8 +161,10 @@
 ////        Finally, the input object is closed before the application exits.
 
 package org.yup.accountingledger;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.FileReader;
@@ -171,6 +173,7 @@ public class AccountingLedgerApp {
     private static Scanner input = new Scanner(System.in);
     public static void main(String[] args) {
         ArrayList<Transaction> transactions = new ArrayList<>();
+        readTransaction(transactions);
         while (true) {
             displayOptions();
             String option = input.nextLine().toUpperCase();
@@ -208,9 +211,10 @@ public class AccountingLedgerApp {
         String depositDescription = input.nextLine();
         System.out.print("Enter a vendor");
         String vendor = input.nextLine();
-        Transaction newTransaction = new Transaction(LocalDate.now(), depositDescription, depositAmount, vendor);
+        Transaction newTransaction = new Transaction(LocalDate.now(),LocalTime.now(), depositDescription, depositAmount, vendor);
         transactions.add(newTransaction);
         saveTransaction(newTransaction);
+
     }
     private static void makePayment(ArrayList<Transaction> transactions) {
         System.out.println("You chose to make a payment.");
@@ -219,48 +223,55 @@ public class AccountingLedgerApp {
         String payee = input.nextLine();
         System.out.print("Payment Amount: ");
         double amount = Double.parseDouble(input.nextLine());
-        System.out.println("What vendor");
+        System.out.println("What vendor ");
         String vendor = input.nextLine();
-        Transaction newTransaction = new Transaction(LocalDate.now(), payee, amount, vendor);
+        Transaction newTransaction = new Transaction(LocalDate.now(),LocalTime.now(), payee, -amount, vendor);
         transactions.add(newTransaction);
         saveTransaction(newTransaction);
         System.out.println("Payment added to transactions.csv");
+
     }
     private static void viewLedger(ArrayList<Transaction> transactions) {
-        try (FileReader fileReader = new FileReader("Transactions.csv");
-             Scanner fileScanner = new Scanner(fileReader)) {
-            while (fileScanner.hasNextLine()) {
-                String[] transactionDetails = fileScanner.nextLine().split("\\|");
-                if (transactionDetails.length < 4) {
-                    System.out.println("Warning: Skipping malformed transaction data.");
-                    continue;
-                }
-                Transaction transaction = new Transaction(LocalDate.parse(transactionDetails[0]), transactionDetails[2],
-                        Double.parseDouble(transactionDetails[1]), transactionDetails[3]);
-                transactions.add(transaction);
-            }
-        } catch (IOException e) {
-            System.out.println("Error: Could not find transactions file.");
-        }
+
         double balance = 0.0;
         System.out.println("Transaction History:");
         System.out.println("---------------------------------------------");
         for (Transaction transaction : transactions) {
-            if (transaction.getType().equals("Deposit")) {
-                balance += transaction.getAmount();
-            } else {
-                balance -= transaction.getAmount();
-            }
-            System.out.printf("%-20s %-10s $%.2f Balance: $%.2f%n", transaction.getDate(),
-                    transaction.getType(), transaction.getAmount(), balance);
+            balance += transaction.getAmount();
+            System.out.printf("%20s %s %s %s $%.2f Balance: $%.2f%n", transaction.getDate(), transaction.getTime(),
+                    transaction.getVendor(),transaction.getType(), transaction.getAmount(), balance);
         }
         System.out.println("---------------------------------------------");
     }
     private static void saveTransaction(Transaction transaction) {
-        try (FileWriter fileWriter = new FileWriter("Transactions.csv", true)) {
-            fileWriter.append(transaction.getDate() + "|" + transaction.getType() + "|" + transaction.getAmount() + "|" + transaction.getVendor() + "\n");
+        try {
+            FileWriter fileWriter = new FileWriter("Transactions.csv", true);
+//            BufferedWriter BuffWriter = new BufferedWriter( fileWriter);
+            fileWriter.write(transaction.getDate() + "|" + transaction.getTime() + "|" + transaction.getType() + "|" + transaction.getAmount() + "|" + transaction.getVendor() + "\n");
+            fileWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+    }
+    private static void readTransaction(ArrayList<Transaction> transactions){
+        try (FileReader fileReader = new FileReader("Transactions.csv");
+             Scanner fileScanner = new Scanner(fileReader)) {
+            while (fileScanner.hasNextLine()) {
+                String[] transactionDetails = fileScanner.nextLine().split("\\|");
+                if (transactionDetails.length < 5) {
+                    System.out.println("Warning: Skipping malformed transaction data.");
+                    continue;
+                }
+
+                Transaction transaction = new Transaction(LocalDate.parse(transactionDetails[0]),LocalTime.parse(transactionDetails[1]), transactionDetails[2],
+                        Double.parseDouble(transactionDetails[3]), transactionDetails[4]);
+                transactions.add(transaction);
+            }
+        } catch (IOException e) {
+            System.out.println("Error: Could not find transactions file.");
+
+        }
+
     }
 }
