@@ -89,27 +89,35 @@ public class AccountingLedgerApp {
     private static void runReports(ArrayList<Transaction> transactions) {
         while (true) {
             System.out.println("Choose a report to run:");
-            System.out.println("1) Month To Date");
-            System.out.println("2) Previous Month");
-            System.out.println("3) Year To Date");
-            System.out.println("4) Previous Year");
-            System.out.println("5) Search by Vendor");
+            System.out.println("1) Display deposits");
+            System.out.println("2) Display payments");
+            System.out.println("3) Month To Date");
+            System.out.println("4) Previous Month");
+            System.out.println("5) Year To Date");
+            System.out.println("6) Previous Year");
+            System.out.println("7) Search by Vendor");
             System.out.println("0) Back");
             String option = input.nextLine();
             switch (option) {
                 case "1":
-                    viewReportByMonth(transactions, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+                    viewDeposits(transactions);
                     break;
                 case "2":
-                    viewReportByMonth(transactions, LocalDate.now().minusMonths(1).getMonthValue(), LocalDate.now().minusMonths(1).getYear());
+                    viewPayments(transactions);
                     break;
                 case "3":
-                    viewReportByYear(transactions, LocalDate.now().getYear());
+                    viewReportByMonth(transactions, LocalDate.now().getMonthValue(), LocalDate.now().getYear());
                     break;
                 case "4":
-                    viewReportByYear(transactions, LocalDate.now().minusYears(1).getYear());
+                    viewReportByMonth(transactions, LocalDate.now().minusMonths(1).getMonthValue(), LocalDate.now().minusMonths(1).getYear());
                     break;
                 case "5":
+                    viewReportByYear(transactions, LocalDate.now().getYear());
+                    break;
+                case "6":
+                    viewReportByYear(transactions, LocalDate.now().minusYears(1).getYear());
+                    break;
+                case "7":
                     System.out.print("Enter vendor name: ");
                     String vendorName = input.nextLine();
                     viewReportByVendor(transactions, vendorName);
@@ -154,6 +162,32 @@ public class AccountingLedgerApp {
         System.out.println("---------------------------------------------");
         for (Transaction transaction : transactions) {
             if (transaction.getDate().getYear() == year) {
+                balance += transaction.getAmount();
+                System.out.printf("%20s %s %s %s $%.2f Balance: $%.2f%n", transaction.getDate(), transaction.getTime(),
+                        transaction.getVendor(), transaction.getType(), transaction.getAmount(), balance);
+            }
+        }
+        System.out.println("---------------------------------------------");
+    }
+    private static void viewDeposits(ArrayList<Transaction> transactions) {
+        double balance = 0.0;
+        System.out.printf("Transaction History for :%n");
+        System.out.println("---------------------------------------------");
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount()>0) {
+                balance += transaction.getAmount();
+                System.out.printf("%20s %s %s %s $%.2f Balance: $%.2f%n", transaction.getDate(), transaction.getTime(),
+                        transaction.getVendor(), transaction.getType(), transaction.getAmount(), balance);
+            }
+        }
+        System.out.println("---------------------------------------------");
+    }
+    private static void viewPayments(ArrayList<Transaction> transactions) {
+        double balance = 0.0;
+        System.out.printf("Transaction History for :%n");
+        System.out.println("---------------------------------------------");
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount()<0) {
                 balance += transaction.getAmount();
                 System.out.printf("%20s %s %s %s $%.2f Balance: $%.2f%n", transaction.getDate(), transaction.getTime(),
                         transaction.getVendor(), transaction.getType(), transaction.getAmount(), balance);
